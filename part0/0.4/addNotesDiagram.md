@@ -5,9 +5,10 @@ participant server
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
+    Note left of server: The server saves note
     server-->>browser: URL redirect to /exampleapp/notes
     deactivate server
-    Note left of server: The server saves note
+
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
