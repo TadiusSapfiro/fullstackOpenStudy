@@ -1,4 +1,5 @@
-```mermaid sequenceDiagram
+```mermaid
+sequenceDiagram
     participant browser
     participant server
 
@@ -13,5 +14,4 @@
     deactivate server
 
     Note right of browser: Browser stays on the same page (no reload)
-
 ```
