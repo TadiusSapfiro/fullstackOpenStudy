@@ -1,62 +1,62 @@
-const Header = (props) => {
-  return <h1>{props.course}</h1>
+const Header = ({course}) => {
+  return <h1>{course}</h1>
 }
 
-const Part = (props) => {
+const Part = ({partInfo}) => {
   return (
     <p>
-      {props.partInfo.name} {props.partInfo.exercises}
+      {partInfo.name} {partInfo.exercises}
     </p>
   )
 }
 
-const Content = (props) => {
+const Content = ({parts}) => {
   return (
-    <>
-      <Part
-        partInfo={props.part1} 
-      />
-      <Part
-        partInfo={props.part2} 
-      />
-      <Part
-        partInfo={props.part3} 
-      />
-    </>
+    <ul>
+      {parts.map ((part, index) => (
+          <li key={index}>
+            <Part
+            partInfo={part} 
+          />
+          </li>
+      ))}
+    </ul>
   )
 }
 
-const Total = (props) => {
-  return <p>Number of exercises {props.total}</p>
+const Total = ({total}) => {
+  return <p>Number of exercises {total}</p>
 }
 
 const App = () => {
     
 
-  const course = 'Half Stack application development'
-  const part1 = {
-    name: "Fundamentals of React",
-    exercises: 10,
-  }
-  const part2 = {
-    name: "Using props to pass data",
-    exercises: 7,
-  }
-  const part3 = {
-    name: "State of a component",
-    exercises: 14,
-  }
-
+  const course = {
+    name: 'Half Stack application development',
+    parts: [
+      {
+        name: "Fundamentals of React",
+        exercises: 10,
+      },
+      {
+        name: "Using props to pass data",
+        exercises: 7,
+      },
+      {
+        name: "State of a component",
+        exercises: 14,
+      }
+    ]
+  };
+  const total = course.parts.reduce((sum, part) => sum + part.exercises, 0);
 
   return (
     <div>
-      <Header course={course} />
+      <Header course={course.name} />
       <Content
-        part1={part1} 
-        part2={part2} 
-        part3={part3} 
+        parts={course.parts} 
       />
-      <Total total={part1.exercises + part2.exercises + part3.exercises} />
+      <Total total={total} />
     </div>  
 
   )
