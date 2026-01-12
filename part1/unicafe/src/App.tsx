@@ -35,9 +35,9 @@ const Feedback = ({
 };
 
 const Statistics = ({ good, neutral, bad }: StatisticsProps) => {
-	const total: number = good + neutral + bad;
-	const average: number = (good - bad) / total;
-	const positive: number = (good / total) * 100;
+	const total = good + neutral + bad;
+	const average = (good - bad) / total;
+	const positive = (good / total) * 100;
 	return (
 		<>
 			<h1>Feedback statistics</h1>
@@ -56,11 +56,10 @@ const App = () => {
 	const [neutral, setNeutral] = useState<number>(0);
 	const [bad, setBad] = useState<number>(0);
 
-	const handleGoodBtnClick: () => void = () =>
-		setGood((prevGood) => prevGood + 1);
-	const handleNeutralBtnClick: () => void = () =>
+	const handleGoodBtnClick = () => setGood((prevGood) => prevGood + 1);
+	const handleNeutralBtnClick = () =>
 		setNeutral((prevNeutral) => prevNeutral + 1);
-	const handleBadBtnClick: () => void = () => setBad((prevBad) => prevBad + 1);
+	const handleBadBtnClick = () => setBad((prevBad) => prevBad + 1);
 	return (
 		<div>
 			<Feedback
