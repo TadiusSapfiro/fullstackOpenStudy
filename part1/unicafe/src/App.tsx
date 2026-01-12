@@ -10,6 +10,11 @@ interface FeedbackProps {
 	onBadClick: () => void;
 }
 
+interface StatisticLineProps {
+	value: number | string;
+	label: string;
+}
+
 interface StatisticsProps {
 	good: number;
 	neutral: number;
@@ -18,6 +23,14 @@ interface StatisticsProps {
 const Button = ({ text, onClick }: ButtonProps) => (
 	<button onClick={onClick}>{text}</button>
 );
+
+const StatisticLine = ({ value, label }: StatisticLineProps) => {
+	return (
+		<p>
+			{label}: {value}
+		</p>
+	);
+};
 
 const Feedback = ({
 	onGoodClick,
@@ -49,12 +62,12 @@ const Statistics = ({ good, neutral, bad }: StatisticsProps) => {
 	return (
 		<>
 			<h1>Feedback statistics</h1>
-			<p>Good: {good}</p>
-			<p>Neutral: {neutral}</p>
-			<p>Bad: {bad}</p>
-			<p>Total: {total}</p>
-			<p>Average: {average || 0}</p>
-			<p>Positive: {positive || 0} %</p>
+			<StatisticLine value={good} label="Good" />
+			<StatisticLine value={neutral} label="Neutral" />
+			<StatisticLine value={bad} label="Bad" />
+			<StatisticLine value={total} label="Total" />
+			<StatisticLine value={average} label="Average" />
+			<StatisticLine value={positive + " %"} label="Positive" />
 		</>
 	);
 };
