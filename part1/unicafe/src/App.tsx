@@ -24,14 +24,6 @@ const Button = ({ text, onClick }: ButtonProps) => (
 	<button onClick={onClick}>{text}</button>
 );
 
-const StatisticLine = ({ value, label }: StatisticLineProps) => {
-	return (
-		<p>
-			{label}: {value}
-		</p>
-	);
-};
-
 const Feedback = ({
 	onGoodClick,
 	onNeutralClick,
@@ -44,6 +36,15 @@ const Feedback = ({
 			<Button text="Neutral" onClick={onNeutralClick} />
 			<Button text="Bad" onClick={onBadClick} />
 		</>
+	);
+};
+
+const StatisticLine = ({ value, label }: StatisticLineProps) => {
+	return (
+		<tr>
+			<td>{label}</td>
+			<td>{value}</td>
+		</tr>
 	);
 };
 
@@ -62,12 +63,16 @@ const Statistics = ({ good, neutral, bad }: StatisticsProps) => {
 	return (
 		<>
 			<h1>Feedback statistics</h1>
-			<StatisticLine value={good} label="Good" />
-			<StatisticLine value={neutral} label="Neutral" />
-			<StatisticLine value={bad} label="Bad" />
-			<StatisticLine value={total} label="Total" />
-			<StatisticLine value={average} label="Average" />
-			<StatisticLine value={positive + " %"} label="Positive" />
+			<table>
+				<tbody>
+					<StatisticLine value={good} label="Good" />
+					<StatisticLine value={neutral} label="Neutral" />
+					<StatisticLine value={bad} label="Bad" />
+					<StatisticLine value={total} label="Total" />
+					<StatisticLine value={average} label="Average" />
+					<StatisticLine value={positive + " %"} label="Positive" />
+				</tbody>
+			</table>
 		</>
 	);
 };
