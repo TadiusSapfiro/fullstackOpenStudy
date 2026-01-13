@@ -42,7 +42,7 @@ const Feedback = ({
 const StatisticLine = ({ value, label }: StatisticLineProps) => {
 	return (
 		<tr>
-			<td>{label}</td>
+			<th scope="row">{label}</th>
 			<td>{value}</td>
 		</tr>
 	);
