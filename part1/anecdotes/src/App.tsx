@@ -24,7 +24,6 @@ const App = () => {
 
 	return (
 		<>
-			{console.log(selected)}
 			<Button text="Next anecdote" onClick={handleNextAnecdote} />
 			<div>{anecdotes[selected]}</div>
 		</>
