@@ -3,6 +3,7 @@ import { useState } from "react";
 
 interface Person {
 	name: string;
+	number: string;
 }
 type FormEvent = React.FormEvent<HTMLFormElement>;
 type InputEvent = React.ChangeEvent<HTMLInputElement>;
@@ -10,45 +11,64 @@ interface PersonFormProps {
 	onAddPerson: (event: FormEvent) => void;
 	newName: string;
 	setNewName: React.Dispatch<React.SetStateAction<string>>;
+	newNumber: string;
+	setNewNumber: React.Dispatch<React.SetStateAction<string>>;
 }
-const PersonForm = ({ onAddPerson, newName, setNewName }: PersonFormProps) => {
+const PersonForm = ({
+	onAddPerson,
+	newName,
+	setNewName,
+	newNumber,
+	setNewNumber,
+}: PersonFormProps) => {
 	const handleNameChange = (event: InputEvent) => {
 		setNewName(event.target.value);
+	};
+
+	const handleNumberChange = (event: InputEvent) => {
+		setNewNumber(event.target.value);
 	};
 
 	return (
 		<>
 			<h2>Phonebook</h2>
 			<form onSubmit={onAddPerson}>
-				<div>
+				<label>
 					Name: <input onChange={handleNameChange} value={newName} />
-				</div>
+				</label>
+				<label>
+					Number: <input onChange={handleNumberChange} value={newNumber} />
+				</label>
 				<div>
-					<button type="submit">Add new name</button>
+					<button type="submit">Add new contact</button>
 				</div>
 			</form>
 		</>
 	);
 };
 
-interface NumberProps {
+interface PersonProps {
 	person: Person;
 }
-const Number = ({ person }: NumberProps) => {
-	return <p>{person.name}</p>;
+const Person = ({ person }: PersonProps) => {
+	return (
+		<p>
+			{person.name} - {person.number}
+		</p>
+	);
 };
 
-interface NumberListProps {
+interface PersonsListProps {
 	persons: Person[];
 }
-const NumbersList = ({ persons }: NumberListProps) => {
+const PersonsList = ({ persons }: PersonsListProps) => {
 	return (
 		<>
-			<h2>Numbers</h2>
+			<h2>Persons</h2>
 			<ul>
 				{persons.map((person) => (
 					<li key={person.name}>
-						<Number person={person} />
+						<Person person={person} />
 					</li>
 				))}
 			</ul>
@@ -58,7 +78,10 @@ const NumbersList = ({ persons }: NumberListProps) => {
 
 const App = () => {
 	const [newName, setNewName] = useState("");
-	const [persons, setPersons] = useState<Person[]>([{ name: "Arto Hellas" }]);
+	const [newNumber, setNewNumber] = useState("");
+	const [persons, setPersons] = useState<Person[]>([
+		{ name: "Arto Hellas", number: "55903663" },
+	]);
 	const handleAddPerson = (event: FormEvent) => {
 		event.preventDefault();
 		const personExist = persons.some(
@@ -68,8 +91,14 @@ const App = () => {
 			alert(`${newName} is already added to phonebook`);
 			return;
 		}
-		setPersons(persons.concat({ name: newName }));
+		const newPerson = {
+			name: newName,
+			number: newNumber,
+		};
+
+		setPersons(persons.concat(newPerson));
 		setNewName("");
+		setNewNumber("");
 	};
 
 	return (
@@ -78,8 +107,10 @@ const App = () => {
 				onAddPerson={handleAddPerson}
 				newName={newName}
 				setNewName={setNewName}
+				newNumber={newNumber}
+				setNewNumber={setNewNumber}
 			/>
-			<NumbersList persons={persons} />
+			<PersonsList persons={persons} />
 		</>
 	);
 };
