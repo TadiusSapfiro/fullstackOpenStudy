@@ -2,14 +2,18 @@ import Course from "./components/Course";
 import type { CourseType } from "./types";
 
 interface AppProps {
-	course: CourseType;
+	courses: CourseType[];
 }
 
-const App = ({ course }: AppProps) => {
+const App = ({ courses }: AppProps) => {
 	return (
-		<>
-			<Course course={course} />
-		</>
+		<ul>
+			{courses.map((course) => (
+				<li key={course.id}>
+					<Course course={course} />
+				</li>
+			))}
+		</ul>
 	);
 };
 
