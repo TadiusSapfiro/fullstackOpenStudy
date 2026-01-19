@@ -61,7 +61,9 @@ const App = () => {
 	const [persons, setPersons] = useState<Person[]>([{ name: "Arto Hellas" }]);
 	const handleAddPerson = (event: FormEvent) => {
 		event.preventDefault();
-		const personExist = persons.find((person) => person.name === newName);
+		const personExist = persons.some(
+			(person) => person.name.toLowerCase() === newName.toLowerCase(),
+		);
 		if (personExist) {
 			alert(`${newName} is already added to phonebook`);
 			return;
