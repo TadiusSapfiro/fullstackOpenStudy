@@ -6,12 +6,12 @@ interface Person {
 }
 type FormEvent = React.FormEvent<HTMLFormElement>;
 type InputEvent = React.ChangeEvent<HTMLInputElement>;
-interface PhonebookProps {
+interface PersonFormProps {
 	onAddPerson: (event: FormEvent) => void;
 	newName: string;
 	setNewName: React.Dispatch<React.SetStateAction<string>>;
 }
-const PersonForm = ({ onAddPerson, newName, setNewName }: PhonebookProps) => {
+const PersonForm = ({ onAddPerson, newName, setNewName }: PersonFormProps) => {
 	const handleNameChange = (event: InputEvent) => {
 		setNewName(event.target.value);
 	};
@@ -58,9 +58,14 @@ const NumbersList = ({ persons }: NumberListProps) => {
 
 const App = () => {
 	const [newName, setNewName] = useState("");
-	const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+	const [persons, setPersons] = useState<Person[]>([{ name: "Arto Hellas" }]);
 	const handleAddPerson = (event: FormEvent) => {
 		event.preventDefault();
+		const personExist = persons.find((person) => person.name === newName);
+		if (personExist) {
+			alert(`${newName} is already added to phonebook`);
+			return;
+		}
 		setPersons(persons.concat({ name: newName }));
 		setNewName("");
 	};
