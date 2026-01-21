@@ -4,9 +4,34 @@ import { useState } from "react";
 interface Person {
 	name: string;
 	number: string;
+	id: number;
 }
 type FormEvent = React.FormEvent<HTMLFormElement>;
 type InputEvent = React.ChangeEvent<HTMLInputElement>;
+
+interface FilterProps {
+	newFilter: string;
+	setNewFilter: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const Filter = ({ newFilter, setNewFilter }: FilterProps) => {
+	const handleFilterChange = (event: InputEvent) => {
+		setNewFilter(event.target.value);
+	};
+
+	return (
+		<>
+			<h2>Phonebook</h2>
+			<form>
+				<label>
+					Filter shown with:{" "}
+					<input onChange={handleFilterChange} value={newFilter} />
+				</label>
+			</form>
+		</>
+	);
+};
+
 interface PersonFormProps {
 	onAddPerson: (event: FormEvent) => void;
 	newName: string;
@@ -60,17 +85,21 @@ const Person = ({ person }: PersonProps) => {
 
 interface PersonsListProps {
 	persons: Person[];
+	filter: string;
 }
-const PersonsList = ({ persons }: PersonsListProps) => {
+const PersonsList = ({ persons, filter }: PersonsListProps) => {
 	return (
 		<>
 			<h2>Persons</h2>
 			<ul>
-				{persons.map((person) => (
-					<li key={person.name}>
-						<Person person={person} />
-					</li>
-				))}
+				{persons.map((person) => {
+					if (!person.name.toLowerCase().includes(filter.toLowerCase())) return;
+					return (
+						<li key={person.id}>
+							<Person person={person} />
+						</li>
+					);
+				})}
 			</ul>
 		</>
 	);
@@ -78,9 +107,13 @@ const PersonsList = ({ persons }: PersonsListProps) => {
 
 const App = () => {
 	const [newName, setNewName] = useState("");
+	const [newFilter, setNewFilter] = useState("");
 	const [newNumber, setNewNumber] = useState("");
 	const [persons, setPersons] = useState<Person[]>([
-		{ name: "Arto Hellas", number: "55903663" },
+		{ name: "Arto Hellas", number: "040-123456", id: 1 },
+		{ name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+		{ name: "Dan Abramov", number: "12-43-234345", id: 3 },
+		{ name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
 	]);
 	const handleAddPerson = (event: FormEvent) => {
 		event.preventDefault();
@@ -94,6 +127,7 @@ const App = () => {
 		const newPerson = {
 			name: newName,
 			number: newNumber,
+			id: persons.length + 1,
 		};
 
 		setPersons(persons.concat(newPerson));
@@ -103,6 +137,8 @@ const App = () => {
 
 	return (
 		<>
+			<h1>Phonebook</h1>
+			<Filter newFilter={newFilter} setNewFilter={setNewFilter} />
 			<PersonForm
 				onAddPerson={handleAddPerson}
 				newName={newName}
@@ -110,7 +146,7 @@ const App = () => {
 				newNumber={newNumber}
 				setNewNumber={setNewNumber}
 			/>
-			<PersonsList persons={persons} />
+			<PersonsList persons={persons} filter={newFilter} />
 		</>
 	);
 };
