@@ -3,7 +3,7 @@ import type { Person, FormEvent } from "./types";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonsList from "./components/PersonsList";
-import axios, { type AxiosResponse } from "axios";
+import axios from "axios";
 
 const App = () => {
 	const [newName, setNewName] = useState("");
@@ -12,11 +12,9 @@ const App = () => {
 	const [persons, setPersons] = useState<Person[]>([]);
 
 	useEffect(() => {
-		axios
-			.get("http://localhost:3001/persons")
-			.then((response: AxiosResponse) => {
-				setPersons(response.data);
-			});
+		axios.get<Person[]>("http://localhost:3001/persons").then((response) => {
+			setPersons(response.data);
+		});
 	}, []);
 
 	const handleAddPerson = (event: FormEvent) => {
