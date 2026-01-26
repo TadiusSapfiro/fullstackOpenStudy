@@ -1,20 +1,36 @@
-import type { FormEvent, InputEvent } from "../types";
+import { useState } from "react";
+import type { FormEvent, InputEvent, Person } from "../types";
+import personsService from "../services/persons";
 
 interface PersonFormProps {
-	onAddPerson: (event: FormEvent) => void;
-	newName: string;
-	setNewName: React.Dispatch<React.SetStateAction<string>>;
-	newNumber: string;
-	setNewNumber: React.Dispatch<React.SetStateAction<string>>;
+	persons: Person[];
+	setPersons: React.Dispatch<React.SetStateAction<Person[]>>;
 }
 
-const PersonForm = ({
-	onAddPerson,
-	newName,
-	setNewName,
-	newNumber,
-	setNewNumber,
-}: PersonFormProps) => {
+const PersonForm = ({ persons, setPersons }: PersonFormProps) => {
+	const [newName, setNewName] = useState("");
+	const [newNumber, setNewNumber] = useState("");
+	const handleAddPerson = (event: FormEvent) => {
+		event.preventDefault();
+		const personExist = persons.some(
+			(person) => person.name.toLowerCase() === newName.toLowerCase(),
+		);
+		if (personExist) {
+			alert(`${newName} is already added to phonebook`);
+			return;
+		}
+		const newPerson = {
+			name: newName,
+			number: newNumber,
+		};
+
+		personsService.create(newPerson).then((response) => {
+			setPersons(persons.concat(response));
+			setNewName("");
+			setNewNumber("");
+		});
+	};
+
 	const handleNameChange = (event: InputEvent) => {
 		setNewName(event.target.value);
 	};
@@ -26,7 +42,7 @@ const PersonForm = ({
 	return (
 		<>
 			<h2>Add new Person</h2>
-			<form onSubmit={onAddPerson}>
+			<form onSubmit={handleAddPerson}>
 				<label>
 					Name: <input onChange={handleNameChange} value={newName} />
 				</label>

@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
-import type { Person, FormEvent } from "./types";
+import type { Person } from "./types";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonsList from "./components/PersonsList";
 import personsService from "./services/persons";
 
 const App = () => {
-	const [newName, setNewName] = useState("");
 	const [newFilter, setNewFilter] = useState("");
-	const [newNumber, setNewNumber] = useState("");
 	const [persons, setPersons] = useState<Person[]>([]);
 
 	useEffect(() => {
@@ -16,28 +14,6 @@ const App = () => {
 			setPersons(response);
 		});
 	}, []);
-
-	const handleAddPerson = (event: FormEvent) => {
-		event.preventDefault();
-		const personExist = persons.some(
-			(person) => person.name.toLowerCase() === newName.toLowerCase(),
-		);
-		if (personExist) {
-			alert(`${newName} is already added to phonebook`);
-			return;
-		}
-		const newPerson = {
-			name: newName,
-			number: newNumber,
-			id: crypto.randomUUID(),
-		};
-
-		personsService.create(newPerson);
-
-		setPersons(persons.concat(newPerson));
-		setNewName("");
-		setNewNumber("");
-	};
 
 	const filteredPersons = persons.filter((person) =>
 		person.name.toLowerCase().includes(newFilter.toLowerCase()),
@@ -47,13 +23,7 @@ const App = () => {
 		<>
 			<h1>Phonebook</h1>
 			<Filter newFilter={newFilter} setNewFilter={setNewFilter} />
-			<PersonForm
-				onAddPerson={handleAddPerson}
-				newName={newName}
-				setNewName={setNewName}
-				newNumber={newNumber}
-				setNewNumber={setNewNumber}
-			/>
+			<PersonForm persons={filteredPersons} setPersons={setPersons} />
 			<PersonsList persons={filteredPersons} />
 		</>
 	);
