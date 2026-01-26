@@ -3,7 +3,7 @@ import type { Person, FormEvent } from "./types";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonsList from "./components/PersonsList";
-import axios from "axios";
+import personsService from "./services/persons";
 
 const App = () => {
 	const [newName, setNewName] = useState("");
@@ -12,8 +12,8 @@ const App = () => {
 	const [persons, setPersons] = useState<Person[]>([]);
 
 	useEffect(() => {
-		axios.get<Person[]>("http://localhost:3001/persons").then((response) => {
-			setPersons(response.data);
+		personsService.getAll().then((response) => {
+			setPersons(response);
 		});
 	}, []);
 
@@ -31,6 +31,8 @@ const App = () => {
 			number: newNumber,
 			id: crypto.randomUUID(),
 		};
+
+		personsService.create(newPerson);
 
 		setPersons(persons.concat(newPerson));
 		setNewName("");
