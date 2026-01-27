@@ -38,12 +38,20 @@ const App = () => {
 		}
 	};
 
+	const deletePerson = async (event: MouseEvent) => {
+		const id = event.target!.closest("li").id;
+		const success = await personsService.remove(id);
+		if (success) {
+			setPersons(persons.filter((person: Person) => person.id !== id));
+		}
+	};
+
 	return (
 		<>
 			<h1>Phonebook</h1>
 			<Filter newFilter={newFilter} setNewFilter={setNewFilter} />
 			<PersonForm onAddPerson={addPerson} />
-			<PersonsList persons={filteredPersons} />
+			<PersonsList onDelete={deletePerson} persons={filteredPersons} />
 		</>
 	);
 };

@@ -6,3 +6,4 @@ export interface Person {
 
 export type FormEvent = React.FormEvent<HTMLFormElement>;
 export type InputEvent = React.ChangeEvent<HTMLInputElement>;
+export type MouseEvent = React.MouseEventHandler<HTMLButtonElement>;

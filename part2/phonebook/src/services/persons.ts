@@ -18,4 +18,10 @@ const create = (newObject: Omit<Person, "id">) => {
 		.then((response) => response.data);
 };
 
-export default { getAll, update, create };
+const remove = (id: string) => {
+	return axios
+		.delete<Person>(`${baseUrl}/${id}`)
+		.then((response) => response.data);
+};
+
+export default { getAll, update, create, remove };

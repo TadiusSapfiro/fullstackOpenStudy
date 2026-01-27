@@ -3,16 +3,17 @@ import Person from "./Person";
 
 interface PersonsListProps {
 	persons: PersonType[];
+	onDelete: (event: MouseEvent) => Promise<void>;
 }
-const PersonsList = ({ persons }: PersonsListProps) => {
+const PersonsList = ({ persons, onDelete }: PersonsListProps) => {
 	return (
 		<>
 			<h2>Persons</h2>
 			<ul>
 				{persons.map((person) => {
 					return (
-						<li key={person.id}>
-							<Person person={person} />
+						<li id={person.id} key={person.id}>
+							<Person onDelete={onDelete} person={person} />
 						</li>
 					);
 				})}

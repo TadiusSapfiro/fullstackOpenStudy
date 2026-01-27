@@ -21,8 +21,8 @@ const PersonForm = ({ onAddPerson }: PersonFormProps) => {
 		event.preventDefault();
 
 		const newPerson = {
-			name: newName,
-			number: newNumber,
+			name: newName.trim(),
+			number: newNumber.trim(),
 		};
 		const success = await onAddPerson(newPerson);
 		if (success) {
