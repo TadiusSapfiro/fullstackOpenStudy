@@ -3,7 +3,7 @@ import Person from "./Person";
 
 interface PersonsListProps {
 	persons: PersonType[];
-	onDelete: (event: MouseEvent) => Promise<void>;
+	onDelete: (id: string) => Promise<void>;
 }
 const PersonsList = ({ persons, onDelete }: PersonsListProps) => {
 	return (
@@ -13,7 +13,7 @@ const PersonsList = ({ persons, onDelete }: PersonsListProps) => {
 				{persons.map((person) => {
 					return (
 						<li id={person.id} key={person.id}>
-							<Person onDelete={onDelete} person={person} />
+							<Person onDelete={() => onDelete(person.id)} person={person} />
 						</li>
 					);
 				})}

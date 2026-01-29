@@ -2,7 +2,7 @@ import type { Person as PersonType } from "../types";
 
 interface PersonProps {
 	person: PersonType;
-	onDelete: MouseEvent;
+	onDelete: () => Promise<void>;
 }
 const Person = ({ person, onDelete }: PersonProps) => {
 	return (

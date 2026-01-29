@@ -38,8 +38,7 @@ const App = () => {
 		}
 	};
 
-	const deletePerson = async (event: MouseEvent) => {
-		const id = event.target!.closest("li").id;
+	const deletePerson = async (id: string) => {
 		const success = await personsService.remove(id);
 		if (success) {
 			setPersons(persons.filter((person: Person) => person.id !== id));
