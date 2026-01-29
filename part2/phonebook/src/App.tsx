@@ -39,6 +39,10 @@ const App = () => {
 	};
 
 	const deletePerson = async (id: string) => {
+		const person = persons.find((person) => person.id === id)!;
+
+		const isConfirmed = window.confirm(`Delete ${person.name}?`);
+		if (!isConfirmed) return;
 		const success = await personsService.remove(id);
 		if (success) {
 			setPersons(persons.filter((person: Person) => person.id !== id));
