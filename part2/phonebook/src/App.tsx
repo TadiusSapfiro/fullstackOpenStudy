@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import type { Person } from "./types";
+import type { Person, NotificationType } from "./types";
 import Filter from "./components/Filter";
+import Notification from "./components/Notification";
 import PersonForm from "./components/PersonForm";
 import PersonsList from "./components/PersonsList";
 import personsService from "./services/persons";
@@ -9,6 +10,10 @@ import axios from "axios";
 const App = () => {
 	const [newFilter, setNewFilter] = useState("");
 	const [persons, setPersons] = useState<Person[]>([]);
+	const [notification, setNotification] = useState<NotificationType>({
+		message: "",
+		type: null,
+	});
 
 	useEffect(() => {
 		personsService.getAll().then((response) => {
@@ -16,14 +21,29 @@ const App = () => {
 		});
 	}, []);
 
+	const showNotification = async (
+		message: string,
+		type: "error" | "success" = "error",
+	) => {
+		await setTimeout(() => {
+			setNotification({
+				message: "",
+				type: null,
+			});
+		}, 5000);
+		setNotification({ message, type });
+	};
+
 	const filteredPersons = persons.filter((person) =>
 		person.name.toLowerCase().includes(newFilter.toLowerCase()),
 	);
+
 	const updatePerson = async (newPerson: Omit<Person, "id">, id: string) => {
 		const returnedPerson = await personsService.update(
 			{ ...newPerson, id: id },
 			id,
 		);
+
 		setPersons(
 			persons.map((person: Person) => {
 				return returnedPerson.id === person.id
@@ -31,13 +51,8 @@ const App = () => {
 					: person;
 			}),
 		);
-		return true;
-	};
 
-	const createPerson = async (newPerson: Omit<Person, "id">) => {
-		const returnedPerson = await personsService.create(newPerson);
-		setPersons(persons.concat(returnedPerson));
-
+		showNotification(`${returnedPerson.name} is updated`, "success");
 		return true;
 	};
 
@@ -55,10 +70,18 @@ const App = () => {
 			}
 			return await createPerson(newPerson);
 		} catch (error) {
-			alert("Error adding person to server");
+			showNotification("Error adding person to server");
 			console.error(error);
 			return false;
 		}
+	};
+
+	const createPerson = async (newPerson: Omit<Person, "id">) => {
+		const returnedPerson = await personsService.create(newPerson);
+
+		setPersons(persons.concat(returnedPerson));
+		showNotification(`Contact ${returnedPerson.name} is created`, "success");
+		return true;
 	};
 
 	const deletePerson = async (id: string) => {
@@ -76,10 +99,14 @@ const App = () => {
 				error.response &&
 				error.response.status === 404
 			) {
-				alert(`Could not delete ${person.name}. It might be already removed.`);
+				showNotification(
+					`Could not delete ${person.name}. It might be already removed.`,
+				);
 				setPersons(persons.filter((person: Person) => person.id !== id));
 			} else {
-				alert(`Failed to delete ${person.name}. Check your connection.`);
+				showNotification(
+					`Failed to delete ${person.name}. Check your connection.`,
+				);
 			}
 		}
 	};
@@ -87,6 +114,7 @@ const App = () => {
 	return (
 		<>
 			<h1>Phonebook</h1>
+			<Notification notification={notification} />
 			<Filter newFilter={newFilter} setNewFilter={setNewFilter} />
 			<PersonForm onAddPerson={addPerson} />
 			<PersonsList onDelete={deletePerson} persons={filteredPersons} />
