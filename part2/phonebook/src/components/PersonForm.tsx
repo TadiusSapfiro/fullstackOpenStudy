@@ -31,21 +31,40 @@ const PersonForm = ({ onAddPerson }: PersonFormProps) => {
 		}
 	};
 
+	const inputStyle =
+		"border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500";
+	const labelStyle = "block text-gray-700 font-medium mb-1";
+
 	return (
-		<>
-			<h2>Add new Person</h2>
-			<form onSubmit={handleAddPerson}>
-				<label>
-					Name: <input onChange={handleNameChange} value={newName} />
-				</label>
-				<label>
-					Number: <input onChange={handleNumberChange} value={newNumber} />
-				</label>
-				<div>
-					<button type="submit">Add new contact</button>
-				</div>
-			</form>
-		</>
+		<form
+			onSubmit={handleAddPerson}
+			className="space-y-4 bg-gray-50 p-4 rounded-lg border"
+		>
+			<div>
+				<label className={labelStyle}>Name:</label>
+				<input
+					className={inputStyle}
+					onChange={handleNameChange}
+					value={newName}
+				/>
+			</div>
+			<div>
+				<label className={labelStyle}>Number:</label>
+				<input
+					className={inputStyle}
+					onChange={handleNumberChange}
+					value={newNumber}
+				/>
+			</div>
+			<div>
+				<button
+					type="submit"
+					className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto"
+				>
+					Add new contact
+				</button>
+			</div>
+		</form>
 	);
 };
 

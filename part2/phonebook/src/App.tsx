@@ -30,7 +30,7 @@ const App = () => {
 				message: "",
 				type: null,
 			});
-		}, 5000);
+		}, 5000000);
 		setNotification({ message, type });
 	};
 
@@ -112,13 +112,13 @@ const App = () => {
 	};
 
 	return (
-		<>
-			<h1>Phonebook</h1>
+		<div className="max-w-2xl mx-auto p-6 font-sans">
+			<h1 className="text-3xl font-bold mb-8 text-gray-800">Phonebook</h1>
 			<Notification notification={notification} />
 			<Filter newFilter={newFilter} setNewFilter={setNewFilter} />
 			<PersonForm onAddPerson={addPerson} />
 			<PersonsList onDelete={deletePerson} persons={filteredPersons} />
-		</>
+		</div>
 	);
 };
 

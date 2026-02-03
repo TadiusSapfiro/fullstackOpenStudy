@@ -8,7 +8,7 @@ interface PersonsListProps {
 const PersonsList = ({ persons, onDelete }: PersonsListProps) => {
 	return (
 		<>
-			<h2>Persons</h2>
+			<h2 className="text-2xl font-bold mb-4 mt-8 text-gray-800">Persons</h2>
 			<ul>
 				{persons.map((person) => {
 					return (
