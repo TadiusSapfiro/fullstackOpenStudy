@@ -12,7 +12,7 @@ const Notification = ({ notification }: NotificationProps) => {
 			? "text-red-700 border-red-700 bg-red-50"
 			: "text-green-700 border-green-700 bg-green-50";
 	return (
-		<div className={`${baseStyles}${typeStyles}`}>{notification.message}</div>
+		<div className={`${baseStyles} ${typeStyles}`}>{notification.message}</div>
 	);
 };
 export default Notification;

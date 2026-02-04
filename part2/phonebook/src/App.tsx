@@ -25,12 +25,12 @@ const App = () => {
 		message: string,
 		type: "error" | "success" = "error",
 	) => {
-		await setTimeout(() => {
+		setTimeout(() => {
 			setNotification({
 				message: "",
 				type: null,
 			});
-		}, 5000000);
+		}, 5000);
 		setNotification({ message, type });
 	};
 
@@ -92,6 +92,7 @@ const App = () => {
 		try {
 			await personsService.remove(id);
 			setPersons(persons.filter((person: Person) => person.id !== id));
+			showNotification(` ${person.name} is deleted.`, "success");
 		} catch (error: unknown) {
 			console.log(error);
 			if (
