@@ -2,11 +2,14 @@ import type { CountryInfo } from "../types";
 import Country from "./Country";
 import CountryData from "./CountryData";
 
-interface PersonsListProps {
+interface CountriesListProps {
 	handleShowCountry: (country: string) => void;
 	countries: CountryInfo[];
 }
-const CountriesList = ({ countries, handleShowCountry }: PersonsListProps) => {
+const CountriesList = ({
+	countries,
+	handleShowCountry,
+}: CountriesListProps) => {
 	if (countries.length > 10) {
 		return <p>To many countries, please specify filter</p>;
 	}
