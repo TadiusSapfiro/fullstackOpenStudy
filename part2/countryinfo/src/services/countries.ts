@@ -19,8 +19,6 @@ interface WeatherDTO {
 
 const getWeatherInfo = (lat: number, lng: number) => {
 	const api_key = import.meta.env.VITE_API_KEY;
-	console.log(api_key);
-
 	const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${api_key}&units=metric`;
 	return axios.get<WeatherDTO>(url).then((response) => {
 		return {

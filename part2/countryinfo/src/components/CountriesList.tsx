@@ -11,7 +11,7 @@ const CountriesList = ({
 	handleShowCountry,
 }: CountriesListProps) => {
 	if (countries.length > 10) {
-		return <p>To many countries, please specify filter</p>;
+		return <p>Too many countries, please specify filter</p>;
 	}
 
 	if (countries.length === 0) {
