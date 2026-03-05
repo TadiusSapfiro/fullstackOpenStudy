@@ -2,7 +2,7 @@ import express from "express";
 import type { Request, Response } from "express";
 const app = express();
 
-const persons = [
+let persons = [
 	{
 		"id": "1",
 		"name": "Arto Hellas",
@@ -43,6 +43,13 @@ app.get("/api/info", (req: Request, res: Response) => {
 			<p>Phonebook has info for ${persons.length} people</p>
 			<p>${new Date()}</p>
 		`);
+});
+
+app.delete("/api/persons/:id", (req: Request, res: Response) => {
+	const id = req.params.id;
+	persons = persons.filter((person) => person.id !== id);
+
+	res.status(204).end();
 });
 
 const PORT = 3001;
