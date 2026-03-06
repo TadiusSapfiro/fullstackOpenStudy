@@ -1,9 +1,20 @@
 import express from "express";
 import crypto from "crypto";
+import morgan from "morgan";
 import type { Request, Response } from "express";
 const app = express();
 app.use(express.json());
 
+morgan.token("body", (req: Request) => {
+	if (req.method === "POST") {
+		return JSON.stringify(req.body);
+	}
+	return "";
+});
+
+app.use(
+	morgan(":method :url :status :res[content-length] - :response-time ms :body"),
+);
 let persons = [
 	{
 		"id": "1",
@@ -54,8 +65,8 @@ interface PersonBody {
 
 app.post("/api/persons", (req: Request<{}, {}, PersonBody>, res: Response) => {
 	const { name, number } = req.body;
-	const cleanName = name ? name.trim() : "";
-	const cleanNumber = number ? number.trim() : "";
+	const cleanName = name ? name.toString().trim() : "";
+	const cleanNumber = number ? number.toString().trim() : "";
 
 	if (!cleanName || !cleanNumber) {
 		return res.status(400).json({ error: "Name and number are required" });
@@ -81,6 +92,12 @@ app.delete("/api/persons/:id", (req: Request, res: Response) => {
 
 	res.status(204).end();
 });
+
+const unknownEndpoint = (req: Request, res: Response) => {
+	res.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => {
