@@ -1,6 +1,8 @@
 import express from "express";
+import crypto from "crypto";
 import type { Request, Response } from "express";
 const app = express();
+app.use(express.json());
 
 let persons = [
 	{
@@ -43,6 +45,34 @@ app.get("/api/info", (req: Request, res: Response) => {
 			<p>Phonebook has info for ${persons.length} people</p>
 			<p>${new Date()}</p>
 		`);
+});
+
+interface PersonBody {
+	name: string;
+	number: string;
+}
+
+app.post("/api/persons", (req: Request<{}, {}, PersonBody>, res: Response) => {
+	const { name, number } = req.body;
+	const cleanName = name ? name.trim() : "";
+	const cleanNumber = number ? number.trim() : "";
+
+	if (!cleanName || !cleanNumber) {
+		return res.status(400).json({ error: "Name and number are required" });
+	}
+
+	const existingPerson = persons.find((person) => person.name === cleanName);
+	if (existingPerson) {
+		return res.status(400).json({ error: "Name must be unique" });
+	}
+
+	const newPerson = {
+		id: crypto.randomUUID(),
+		name: cleanName,
+		number: cleanNumber,
+	};
+	persons.push(newPerson);
+	res.status(201).json(newPerson);
 });
 
 app.delete("/api/persons/:id", (req: Request, res: Response) => {
