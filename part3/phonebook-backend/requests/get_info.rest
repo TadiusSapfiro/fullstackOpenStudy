@@ -1,1 +1,1 @@
-GET http://localhost:3001/api/info/
+GET https://fullstackopenstudy-oem6.onrender.com/api/info/
