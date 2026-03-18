@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 const password = process.argv[2];
 
-const url = `mongodb+srv://vzelentinov_db_user:${password}@cluster0.zefufii.mongodb.net/personsApp?appName=Cluster0`;
+const url = process.env.MONGODB_URI as string;
 
 mongoose.set("strictQuery", false);
 
