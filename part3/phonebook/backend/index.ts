@@ -1,7 +1,28 @@
 import express from "express";
 import crypto from "crypto";
 import morgan from "morgan";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
+
+const password = process.argv[2];
+
+const url = `mongodb+srv://vzelentinov_db_user:${password}@cluster0.zefufii.mongodb.net/personsApp?appName=Cluster0`;
+
+mongoose.set("strictQuery", false);
+
+mongoose.connect(url, { family: 4 });
+interface IPerson {
+	name: string;
+	number: string;
+}
+
+const personSchema = new mongoose.Schema<IPerson>({
+	name: { type: String, required: true },
+	number: String,
+});
+
+const PersonModel = mongoose.model<IPerson>("Person", personSchema);
+
 const app = express();
 app.use(express.json());
 
@@ -41,7 +62,8 @@ let persons = [
 	},
 ];
 
-app.get("/api/persons", (req: Request, res: Response) => {
+app.get("/api/persons", async (req: Request, res: Response) => {
+	const persons = await PersonModel.find({});
 	res.json(persons);
 });
 
@@ -101,6 +123,25 @@ const unknownEndpoint = (req: Request, res: Response) => {
 };
 
 app.use(unknownEndpoint);
+
+const errorHandler = (
+	error: any,
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	console.error("Error caught:", error.message);
+
+	if (error.name === "CastError") {
+		return res.status(400).send({ error: "Unknown format ID" });
+	} else if (error.name === "ValidationError") {
+		return res.status(400).json({ error: error.message });
+	}
+
+	next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
