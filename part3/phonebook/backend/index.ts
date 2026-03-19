@@ -1,5 +1,5 @@
 import express from "express";
-import { PersonModel } from "./modules/person";
+import { PersonModel } from "./models/person";
 import crypto from "crypto";
 import morgan from "morgan";
 import type { Request, Response, NextFunction } from "express";
@@ -20,46 +20,23 @@ app.use(
 
 app.use(express.static("dist"));
 
-let persons = [
-	{
-		"id": "1",
-		"name": "Arto Hellas",
-		"number": "040-123456",
-	},
-	{
-		"id": "2",
-		"name": "Ada Lovelace",
-		"number": "39-44-5323523",
-	},
-	{
-		"id": "3",
-		"name": "Dan Abramov",
-		"number": "12-43-234345",
-	},
-	{
-		"id": "4",
-		"name": "Mary Poppendieck",
-		"number": "39-23-6423122",
-	},
-];
-
 app.get("/api/persons", async (req: Request, res: Response) => {
 	const persons = await PersonModel.find({});
 	res.json(persons);
 });
 
-app.get("/api/persons/:id", (req: Request, res: Response) => {
-	const id = req.params.id;
-	const person = persons.find((item) => item.id === id);
+app.get("/api/persons/:id", async (req: Request, res: Response) => {
+	const person = await PersonModel.findById(req.params.id);
 	if (!person) {
 		return res.status(404).end();
 	}
 	return res.json(person);
 });
 
-app.get("/api/info", (req: Request, res: Response) => {
+app.get("/api/info", async (req: Request, res: Response) => {
+	const personsCount = await PersonModel.countDocuments();
 	res.send(`
-			<p>Phonebook has info for ${persons.length} people</p>
+			<p>Phonebook has info for ${personsCount} people</p>
 			<p>${new Date()}</p>
 		`);
 });
@@ -69,33 +46,34 @@ interface PersonBody {
 	number: string;
 }
 
-app.post("/api/persons", (req: Request<{}, {}, PersonBody>, res: Response) => {
-	const { name, number } = req.body;
-	const cleanName = name ? name.toString().trim() : "";
-	const cleanNumber = number ? number.toString().trim() : "";
+app.post(
+	"/api/persons",
+	async (req: Request<{}, {}, PersonBody>, res: Response) => {
+		const { name, number } = req.body;
+		const cleanName = name ? name.toString().trim() : "";
+		const cleanNumber = number ? number.toString().trim() : "";
 
-	if (!cleanName || !cleanNumber) {
-		return res.status(400).json({ error: "Name and number are required" });
-	}
+		if (!cleanName || !cleanNumber) {
+			return res.status(400).json({ error: "Name and number are required" });
+		}
 
-	const existingPerson = persons.find((person) => person.name === cleanName);
-	if (existingPerson) {
-		return res.status(400).json({ error: "Name must be unique" });
-	}
+		const existingPerson = await PersonModel.findOne({ name: cleanName });
+		if (existingPerson) {
+			return res.status(400).json({ error: "Name must be unique" });
+		}
 
-	const newPerson = {
-		id: crypto.randomUUID(),
-		name: cleanName,
-		number: cleanNumber,
-	};
-	persons.push(newPerson);
-	res.status(201).json(newPerson);
-});
+		const newPerson = new PersonModel({
+			name: cleanName,
+			number: cleanNumber,
+		});
+		await newPerson.save();
+		console.log(`added ${cleanName} number ${cleanNumber} to phonebook`);
+		res.status(201).json(newPerson);
+	},
+);
 
-app.delete("/api/persons/:id", (req: Request, res: Response) => {
-	const id = req.params.id;
-	persons = persons.filter((person) => person.id !== id);
-
+app.delete("/api/persons/:id", async (req: Request, res: Response) => {
+	await PersonModel.deleteOne({ _id: req.params.id });
 	res.status(204).end();
 });
 
