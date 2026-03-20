@@ -2,7 +2,6 @@ import express from "express";
 import { PersonModel } from "./models/person";
 import morgan from "morgan";
 import type { Request, Response, NextFunction } from "express";
-import { log } from "node:console";
 
 const app = express();
 app.use(express.static("dist"));
