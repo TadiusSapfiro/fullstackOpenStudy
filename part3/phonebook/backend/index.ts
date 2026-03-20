@@ -1,10 +1,11 @@
 import express from "express";
 import { PersonModel } from "./models/person";
-import crypto from "crypto";
 import morgan from "morgan";
 import type { Request, Response, NextFunction } from "express";
+import { log } from "node:console";
 
 const app = express();
+app.use(express.static("dist"));
 app.use(express.json());
 
 morgan.token("body", (req: Request) => {
@@ -17,8 +18,6 @@ morgan.token("body", (req: Request) => {
 app.use(
 	morgan(":method :url :status :res[content-length] - :response-time ms :body"),
 );
-
-app.use(express.static("dist"));
 
 app.get("/api/persons", async (req: Request, res: Response) => {
 	const persons = await PersonModel.find({});
@@ -72,8 +71,24 @@ app.post(
 	},
 );
 
+app.put("/api/persons/:id", async (req: Request, res: Response) => {
+	const { name, number } = req.body;
+	const cleanName = name ? name.toString().trim() : "";
+	const cleanNumber = number ? number.toString().trim() : "";
+
+	const person = await PersonModel.findById(req.params.id);
+	if (!person) {
+		return res.status(404).end();
+	}
+	person.name = cleanName;
+	person.number = cleanNumber;
+
+	const updatedPerson = await person.save();
+	res.json(updatedPerson);
+});
+
 app.delete("/api/persons/:id", async (req: Request, res: Response) => {
-	await PersonModel.deleteOne({ _id: req.params.id });
+	await PersonModel.findByIdAndDelete(req.params.id);
 	res.status(204).end();
 });
 
