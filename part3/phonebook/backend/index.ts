@@ -108,7 +108,10 @@ const errorHandler = (
 	if (error.name === "CastError") {
 		return res.status(400).send({ error: "Unknown format ID" });
 	} else if (error.name === "ValidationError") {
-		return res.status(400).json({ error: error.message });
+		const firstValidationError = Object.values(error.errors)[0] as any;
+		const errorMessage = firstValidationError.message;
+		console.log(errorMessage);
+		return res.status(400).json({ error: errorMessage });
 	}
 
 	next(error);

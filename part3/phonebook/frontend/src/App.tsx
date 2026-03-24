@@ -5,7 +5,7 @@ import Notification from "./components/Notification";
 import PersonForm from "./components/PersonForm";
 import PersonsList from "./components/PersonsList";
 import personsService from "./services/persons";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const App = () => {
 	const [newFilter, setNewFilter] = useState("");
@@ -69,8 +69,13 @@ const App = () => {
 				return await updatePerson(newPerson, person.id);
 			}
 			return await createPerson(newPerson);
-		} catch (error) {
-			showNotification("Error adding person to server");
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error) && error.response) {
+				showNotification(error.response.data.error);
+				console.log(error.response.data.error);
+			} else {
+				showNotification("Something went wrong");
+			}
 			console.error(error);
 			return false;
 		}
