@@ -5,7 +5,7 @@ import Notification from "./components/Notification";
 import PersonForm from "./components/PersonForm";
 import PersonsList from "./components/PersonsList";
 import personsService from "./services/persons";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 const App = () => {
 	const [newFilter, setNewFilter] = useState("");
