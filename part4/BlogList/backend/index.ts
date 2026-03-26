@@ -1,20 +1,13 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import 'dotenv/config'
+import { Blog } from './models/blogs'
+const mongoUrl = process.env.MONGODB_URI as string
+
+mongoose.connect(mongoUrl, { family: 4 })
 
 const app = express()
 
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-})
-
-const Blog = mongoose.model('Blog', blogSchema)
-
-const mongoUrl = process.env.MONGODB_URI as string
-mongoose.connect(mongoUrl, { family: 4 })
 
 app.use(express.json())
 
