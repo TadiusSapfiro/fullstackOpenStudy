@@ -1,9 +1,9 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import 'dotenv/config'
 import { MONGODB_URI } from './utils/config'
 import blogsRouter from './controllers/blog'
 import logger from './utils/logger'
+import middleware from './utils/middleware'
 
 const app = express()
 
@@ -21,5 +21,8 @@ mongoose
 app.use(express.json())
 
 app.use('/api/blogs', blogsRouter)
+
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 export default app

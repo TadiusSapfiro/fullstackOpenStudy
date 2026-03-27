@@ -1,14 +1,14 @@
 import mongoose from 'mongoose'
 
 mongoose.set('strictQuery', true)
-interface blogDB  {
+interface BlogDB  {
   title: string,
   author: string,
   url: string,
   likes: number,
 }
 
-const blogSchema = new mongoose.Schema<blogDB>({
+const blogSchema = new mongoose.Schema<BlogDB>({
   title: String,
   author: String,
   url: String,
@@ -19,7 +19,7 @@ blogSchema.set('toJSON', {
   transform: (document, returnedObject:Record<string, any>) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
-    delete returnedObject._v
+    delete returnedObject.__v
   }
 })
 

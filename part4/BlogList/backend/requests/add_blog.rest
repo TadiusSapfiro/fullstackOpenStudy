@@ -3,8 +3,8 @@ content-type:application/json
 
 
 {
- 	"title": "test2",
-  "author": "test1",
-  "url": "test1",
-  "likes": 10
+ 	"title": "test3",
+  "author": "test4",
+  "url": "test4",
+  "likes": 15
 }

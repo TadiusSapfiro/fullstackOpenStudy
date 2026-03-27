@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { PORT } from './utils/config'
 import app from './app'
 import logger from './utils/logger'
