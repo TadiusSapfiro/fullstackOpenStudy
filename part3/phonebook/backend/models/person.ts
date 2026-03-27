@@ -8,7 +8,7 @@ if (!url) {
   process.exit(1)
 }
 
-mongoose.set('strictQuery', false)
+mongoose.set('strictQuery', true)
 interface IPerson {
   name: string;
   number: string;
@@ -44,7 +44,7 @@ const personSchema = new mongoose.Schema<IPerson>({
 })
 
 personSchema.set('toJSON', {
-  transform: (_document, returnedObject: Record<string, any>) => {
+  transform: (document, returnedObject: Record<string, any>) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
