@@ -10,7 +10,9 @@
     "build:ui": "shx rm -rf dist && cd ../frontend && npm run build && shx cp -r dist ../backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m \"uibuild\" && git push",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +37,7 @@
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.2"
+    "typescript-eslint": "^8.57.2",
+    "vitest": "^4.1.2"
   }
 }

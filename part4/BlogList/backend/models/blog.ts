@@ -1,12 +1,7 @@
 import mongoose from 'mongoose'
+import { BlogDB } from '../types'
 
 mongoose.set('strictQuery', true)
-interface BlogDB  {
-  title: string,
-  author: string,
-  url: string,
-  likes: number,
-}
 
 const blogSchema = new mongoose.Schema<BlogDB>({
   title: String,
