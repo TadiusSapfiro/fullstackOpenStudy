@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://restcountries.com/v3.1/all?fields=";
+const baseUrl = "https://studies.cs.helsinki.fi/restcounries/api/all";
 
 interface CountryDTO {
 	name: { common: string };
@@ -31,19 +31,18 @@ const getWeatherInfo = (lat: number, lng: number) => {
 
 const getAll = () => {
 	return axios
-		.get<
-			CountryDTO[]
-		>(`${baseUrl}name,flags,area,population,capital,languages,capitalInfo `)
+		.get<CountryDTO[]>(baseUrl)
 		.then((response) => {
+			
 			return response.data.map((info) => {
 				return {
 					name: info.name.common,
-					capital: info.capital?.[0] || "No capital",
-					lat: info.capitalInfo?.latlng[0] || 0,
-					lon: info.capitalInfo?.latlng[1] || 0,
+					lat: info.capitalInfo?.latlng?.[0] || 0,
+					lon: info.capitalInfo?.latlng?.[1] || 0,
 					flag: info.flags.svg,
 					area: info.area,
 					population: info.population,
+					capital: info.capital?.[0] || "No capital",
 					languages: info.languages ? Object.values(info.languages) : [],
 				};
 			});

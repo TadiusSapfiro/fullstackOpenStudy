@@ -45,13 +45,12 @@ const anecdotesList = [
 const App = () => {
 	const [anecdotes, setAnecdotes] = useState<Anecdote[]>(anecdotesList);
 	const [selected, setSelected] = useState(0);
-	const mostVoted = useMemo(() => {
-		return anecdotes.reduce((bestIndex, anecdote, index, anecdotesList) => {
-			return anecdote.votes > anecdotesList[bestIndex].votes
+	const mostVoted = anecdotes.reduce((bestIndex, anecdote, index, list) => {
+			return anecdote.votes > list[bestIndex].votes
 				? index
 				: bestIndex;
 		}, 0);
-	}, [anecdotes]);
+	
 
 	const handleNextAnecdote = () => {
 		let randomIndex;

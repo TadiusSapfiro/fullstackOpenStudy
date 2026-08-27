@@ -7,10 +7,18 @@ import type { CountryInfo } from "./types";
 const App = () => {
 	const [newFilter, setNewFilter] = useState("");
 	const [countries, setCountries] = useState<CountryInfo[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [errorData, setErrorData] = useState("");
 
 	useEffect(() => {
-		countryService.getAll().then((response) => {
+		countryService.getAll()
+		.then((response) => {
 			setCountries(response);
+			setIsLoading(false)
+		})
+		.catch((error)=>{
+			setIsLoading(false)
+			setErrorData(error.message)
 		});
 	}, []);
 
@@ -29,6 +37,8 @@ const App = () => {
 			<CountriesList
 				handleShowCountry={handleShowCountry}
 				countries={filteredCountries}
+				isLoading={isLoading}
+				errorData={errorData}
 			/>
 		</div>
 	);

@@ -5,11 +5,23 @@ import CountryData from "./CountryData";
 interface CountriesListProps {
 	handleShowCountry: (country: string) => void;
 	countries: CountryInfo[];
+	isLoading: boolean
+  errorData: string
 }
 const CountriesList = ({
 	countries,
 	handleShowCountry,
+	isLoading,
+  errorData,
 }: CountriesListProps) => {
+	if (isLoading) {
+		return <p>Loading...</p>;
+	}
+
+	if (errorData) {
+		return <p>{errorData}</p>;
+	}
+
 	if (countries.length > 10) {
 		return <p>Too many countries, please specify filter</p>;
 	}
