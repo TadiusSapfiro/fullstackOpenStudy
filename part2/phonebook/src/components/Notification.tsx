@@ -5,7 +5,7 @@ interface NotificationProps {
 
 const Notification = ({ notification }: NotificationProps) => {
 	if (!notification.message) return null;
-	const baseStyles = "p-4 mb-4 text-lg border-2 rounded-md bg-gray-100";
+	const baseStyles = "p-4 text-lg border-2 rounded-md bg-gray-100 fixed top-4 right-4 w-80 z-50";
 
 	const typeStyles =
 		notification.type === "error"

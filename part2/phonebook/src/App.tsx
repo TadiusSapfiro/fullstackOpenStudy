@@ -21,7 +21,7 @@ const App = () => {
 		});
 	}, []);
 
-	const showNotification = async (
+	const showNotification = (
 		message: string,
 		type: "error" | "success" = "error",
 	) => {
@@ -47,7 +47,7 @@ const App = () => {
 		setPersons(
 			persons.map((person: Person) => {
 				return returnedPerson.id === person.id
-					? { ...person, number: returnedPerson.number }
+					? returnedPerson
 					: person;
 			}),
 		);
