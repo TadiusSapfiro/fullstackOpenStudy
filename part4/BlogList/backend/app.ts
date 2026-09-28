@@ -7,15 +7,18 @@ import middleware from './utils/middleware'
 
 const app = express()
 
-mongoose
-  .connect(MONGODB_URI, { family: 4 })
-  .then(() => {
-    logger.info('Successful connection to MongoDB')
-  })
-  .catch((error) => {
-    logger.error(error)
-    logger.info(`Failed connection to MongoDB: ${error.message}`)
-  })
+if(process.env.NODE_ENV !== 'test'){
+  mongoose
+    .connect(MONGODB_URI, { family: 4 })
+    .then(() => {
+      logger.info('Successful connection to MongoDB')
+    })
+    .catch((error) => {
+      logger.error(error)
+      logger.info(`Failed connection to MongoDB: ${error.message}`)
+    })
+}
+
 
 
 app.use(express.json())

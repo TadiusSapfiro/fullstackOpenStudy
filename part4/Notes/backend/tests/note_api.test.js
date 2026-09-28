@@ -4,19 +4,10 @@ const supertest = require('supertest')
 const app = require('../app')
 const { clearDB, connectDB, disconnectDB } = require('./mongo_helper')
 const Note = require('../models/note')
-
+const { initialNotes, notesInDb } = require('./test_helper')
 const api = supertest(app)
 
-const initialNotes = [
-  {
-    content: 'HTML is easy',
-    important: false,
-  },
-  {
-    content: 'Browser can execute only JavaScript',
-    important: true,
-  },
-]
+
 before(async () => {
   await connectDB()
 })
@@ -24,10 +15,7 @@ before(async () => {
 beforeEach(async () => {
   await clearDB()
 
-  for (let note of initialNotes) {
-    let noteObject = new Note(note)
-    await noteObject.save()
-  }
+  await Note.insertMany(initialNotes)
 })
 
 test('Notes are returned as JSON and status 200', async () => {
@@ -81,9 +69,25 @@ test('note without content is not added', async () => {
     .send(newNote)
     .expect(400)
 
-  const response = await api.get('/api/notes')
+  const response = await notesInDb()
 
-  assert.strictEqual(response.body.length, initialNotes.length)
+  assert.strictEqual(response.length, initialNotes.length)
+})
+
+test('a note can be deleted', async () => {
+  const notesAtStart = await notesInDb()
+  const noteToDelete = notesAtStart[0]
+
+  await api
+    .delete(`/api/notes/${noteToDelete.id}`)
+    .expect(204)
+
+  const notesAtEnd = await notesInDb()
+
+  const ids = notesAtEnd.map(n => n.id)
+  assert(!ids.includes(noteToDelete.id))
+
+  assert.strictEqual(notesAtEnd.length, initialNotes.length - 1)
 })
 
 
