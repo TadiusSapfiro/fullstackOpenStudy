@@ -21,7 +21,7 @@ afterAll(async() => {
   await disconnectDB()
 })
 
-describe('GET request', () => {
+describe('When GET request used', () => {
   test('Blogs are returned as JSON and status 200', async () => {
     await api.
       get('/api/blogs').
@@ -32,5 +32,11 @@ describe('GET request', () => {
   test('All blogs are returned', async () => {
     const response = await api.get('/api/blogs')
     expect(response.body).toHaveLength(blogList.length)
+  })
+
+  test('id field defined instead of _id', async () => {
+    const response = await api.get('/api/blogs')
+    expect(response.body[0].id).toBeDefined()
+    expect(response.body[0]._id).toBeUndefined()
   })
 })
