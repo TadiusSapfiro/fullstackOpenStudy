@@ -4,6 +4,12 @@ import mongoose from 'mongoose'
 let mongoServer: MongoMemoryServer
 
 const connectDB = async () => {
+  if(mongoose.connection.readyState !== 0){
+    await mongoose.connection.close()
+  }
+  if(mongoServer){
+    await mongoServer.stop()
+  }
   mongoServer = await MongoMemoryServer.create()
   const URI = mongoServer.getUri()
   await mongoose.connect(URI)

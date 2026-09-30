@@ -6,8 +6,9 @@ import logger from './utils/logger'
 import middleware from './utils/middleware'
 
 const app = express()
-
+console.log('env - ' + process.env.NODE_ENV )
 if(process.env.NODE_ENV !== 'test'){
+  console.log('test' )
   mongoose
     .connect(MONGODB_URI, { family: 4 })
     .then(() => {
