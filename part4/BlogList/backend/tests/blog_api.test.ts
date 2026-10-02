@@ -3,7 +3,7 @@ import supertest from 'supertest'
 import app from '../app'
 import { Blog } from '../models/blog'
 import { clearDB, connectDB, disconnectDB } from '../utils/mongo_helper'
-import { blogList } from './mock_data'
+import { initialBlogs } from './mock_data'
 import { BlogDB } from '../types'
 
 const api = supertest(app)
@@ -15,7 +15,7 @@ beforeAll(async() => {
 
 beforeEach(async() => {
   await clearDB()
-  await Blog.insertMany(blogList)
+  await Blog.insertMany(initialBlogs)
 })
 
 afterAll(async() => {
@@ -32,7 +32,7 @@ describe('When GET request used', () => {
 
   test('All blogs are returned', async () => {
     const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(blogList.length)
+    expect(response.body).toHaveLength(initialBlogs.length)
   })
 
   test('id field defined instead of _id', async () => {
@@ -55,9 +55,25 @@ describe('When POST request used', () => {
       expect(201).
       expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    const titlesList: string[] = response.body.map((e:BlogDB) => e.title)
-    expect(response.body).toHaveLength(blogList.length + 1)
+    const blogList = await Blog.find({})
+    const titlesList: string[] = blogList.map((e:BlogDB) => e.title)
+    expect(blogList).toHaveLength(initialBlogs.length + 1)
     expect(titlesList).toContain('Test blog')
+  })
+  test('if field "likes" not in the request, it value = 0',async() => {
+    const newBlog:BlogDB = {
+      title: 'Test blog',
+      author: 'Test author',
+      url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+    }
+    await api.post('/api/blogs').
+      send(newBlog).
+      expect(201).
+      expect('Content-Type', /application\/json/)
+
+    const addedBlog = await Blog.findOne({ title:'Test blog' })
+    expect(addedBlog?.likes).toBeDefined()
+    expect(addedBlog?.likes).toBe(0)
+
   })
 })

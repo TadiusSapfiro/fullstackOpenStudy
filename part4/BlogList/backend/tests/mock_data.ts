@@ -1,4 +1,4 @@
-export const blogList = [
+export const initialBlogs = [
   {
     title: 'React patterns',
     author: 'Michael Chan',
