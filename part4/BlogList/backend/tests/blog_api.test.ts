@@ -22,7 +22,7 @@ afterAll(async() => {
   await disconnectDB()
 })
 
-describe('When GET request used', () => {
+describe('fetching all blogs', () => {
   test('Blogs are returned as JSON and status 200', async () => {
     await api.
       get('/api/blogs').
@@ -42,10 +42,10 @@ describe('When GET request used', () => {
   })
 })
 
-describe('When POST request used', () => {
+describe('addition of a new blog', () => {
   test('a valid blog can be added', async() => {
     const newBlog:BlogDB = {
-      title: 'Test blog',
+      title: 'Test blog 1',
       author: 'Test author',
       url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
       likes: 1,
@@ -58,11 +58,11 @@ describe('When POST request used', () => {
     const blogList = await Blog.find({})
     const titlesList: string[] = blogList.map((e:BlogDB) => e.title)
     expect(blogList).toHaveLength(initialBlogs.length + 1)
-    expect(titlesList).toContain('Test blog')
+    expect(titlesList).toContain('Test blog 1')
   })
   test('if field "likes" not in the request, it value = 0',async() => {
     const newBlog:BlogDB = {
-      title: 'Test blog',
+      title: 'Test blog 2',
       author: 'Test author',
       url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
     }
@@ -71,9 +71,30 @@ describe('When POST request used', () => {
       expect(201).
       expect('Content-Type', /application\/json/)
 
-    const addedBlog = await Blog.findOne({ title:'Test blog' })
+    const addedBlog = await Blog.findOne({ title:'Test blog 2' })
     expect(addedBlog?.likes).toBeDefined()
     expect(addedBlog?.likes).toBe(0)
 
+  })
+  test('if field "title" not in the request, status 400', async() => {
+    const newBlog: Omit<BlogDB, 'title'> = {
+      author: 'Test author',
+      url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+      likes: 1,
+    }
+    await api.post('/api/blogs').
+      send(newBlog).
+      expect(400)
+  })
+
+  test('if field "url" not in the request, status 400', async() => {
+    const newBlog:Omit<BlogDB,'url'> = {
+      title: 'Test blog 3',
+      author: 'Test author',
+      likes: 1,
+    }
+    await api.post('/api/blogs').
+      send(newBlog).
+      expect(400)
   })
 })
