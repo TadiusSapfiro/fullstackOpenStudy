@@ -98,3 +98,14 @@ describe('addition of a new blog', () => {
       expect(400)
   })
 })
+
+describe('deletion of a blog', () => {
+  test('a valid blog can be deleted', async() => {
+    const blogsAtStart = await Blog.find({})
+    const blogToDelete = blogsAtStart[0]
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    const blogsAtEnd = await Blog.find({})
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+    expect(blogsAtEnd.map(b => b.id)).not.toContain(blogToDelete.id)
+  })
+})

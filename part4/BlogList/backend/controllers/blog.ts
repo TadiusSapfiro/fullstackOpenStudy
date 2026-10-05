@@ -18,4 +18,9 @@ blogsRouter.post('/', async (request: Request, response:Response) => {
   return response.status(201).json(savedBlog)
 })
 
+blogsRouter.delete('/:id', async (request: Request, response:Response) => {
+  await Blog.findByIdAndDelete(request.params.id)
+  return response.status(204).end()
+})
+
 export default blogsRouter
