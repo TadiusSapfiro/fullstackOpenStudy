@@ -109,3 +109,23 @@ describe('deletion of a blog', () => {
     expect(blogsAtEnd.map(b => b.id)).not.toContain(blogToDelete.id)
   })
 })
+
+describe('updating of a blog', () => {
+  test('a blog can be updated', async() => {
+    const response = await api.get('/api/blogs')
+    const blogsAtStart = response.body
+    const blogToUpdate = blogsAtStart[0]
+    blogToUpdate.likes = 123321
+    const putResponse = await api.
+      put(`/api/blogs/${blogToUpdate.id}`).
+      send(blogToUpdate).
+      expect(200)
+
+    expect(putResponse.body).toBeDefined()
+    expect(putResponse.body?.likes).toBe(123321)
+    expect(putResponse.body.title).toBe(blogToUpdate.title)
+
+    const updatedBlogInDb = await Blog.findById(blogToUpdate.id)
+    expect(updatedBlogInDb?.likes).toBe(123321)
+  })
+})

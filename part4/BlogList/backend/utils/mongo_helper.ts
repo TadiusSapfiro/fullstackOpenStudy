@@ -1,5 +1,6 @@
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
+import { User } from '../models/user'
 
 let mongoServer: MongoMemoryServer
 
@@ -29,4 +30,9 @@ const disconnectDB = async () => {
   await mongoServer.stop()
 }
 
-export { connectDB, clearDB, disconnectDB }
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
+export { connectDB, clearDB, disconnectDB, usersInDb }
