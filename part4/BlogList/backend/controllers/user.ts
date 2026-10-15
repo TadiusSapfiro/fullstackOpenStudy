@@ -14,4 +14,9 @@ usersRouter.post('/', async (request:Request, response:Response) => {
   return response.status(201).json(savedUser)
 })
 
+usersRouter.get('/', async (request:Request, response:Response) => {
+  const users = await User.find({})
+  return response.status(200).json(users)
+})
+
 export default usersRouter
