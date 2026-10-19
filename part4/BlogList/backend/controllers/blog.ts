@@ -13,13 +13,25 @@ blogsRouter.get('/', async (request: Request, response:Response) => {
 })
 
 blogsRouter.post('/', async (request: Request, response:Response) => {
+
   const user = await User.findById(request.body.userId)
   if(!user){
     return response.status(400).json({ error: 'userId missing or not valid' })
   }
-  const newBlog = request.body
-  const blog = new Blog(newBlog)
+
+  const { title, author, url, likes } = request.body
+  const blog = new Blog({
+    title,
+    author,
+    url,
+    likes:likes || 0,
+    user: user._id
+
+  })
+
   const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
   return response.status(201).json(savedBlog)
 })
 

@@ -31,7 +31,7 @@ describe('when there is initially one user in db', () => {
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await usersInDb()
 
-    const newUser = {
+    const newUser: UserPayload = {
       username: 'mluukkai',
       name: 'Matti Luukkainen',
       password: 'salainen',

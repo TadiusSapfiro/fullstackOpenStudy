@@ -5,6 +5,7 @@ export interface BlogDB  {
   author: string,
   url: string,
   likes?: number,
+  user: mongoose.Types.ObjectId,
 }
 
 export interface UserDB {
