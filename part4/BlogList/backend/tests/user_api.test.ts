@@ -4,6 +4,7 @@ import { describe, expect, test, beforeAll, afterAll, beforeEach } from 'vitest'
 import supertest from 'supertest'
 import app from '../app'
 import { clearDB, connectDB, disconnectDB, usersInDb } from '../utils/mongo_helper'
+import { UserPayload } from '../types'
 
 
 const api = supertest(app)
@@ -26,14 +27,6 @@ afterAll(async() => {
 })
 
 describe('when there is initially one user in db', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
-  })
 
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await usersInDb()
@@ -59,7 +52,7 @@ describe('when there is initially one user in db', () => {
   test('creation fails with proper statuscode and message if username already taken', async () => {
     const usersAtStart = await usersInDb()
 
-    const newUser = {
+    const newUser: UserPayload = {
       username: 'root',
       name: 'Superuser',
       password: 'salainen',
@@ -74,7 +67,7 @@ describe('when there is initially one user in db', () => {
     const usersAtEnd = await usersInDb()
     expect(result.body.error).toContain('expected `username` to be unique')
 
-    expect(usersAtEnd.length).toStrictEqual(usersAtStart.length)
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
   describe('fetching all users', () => {
     test('Users are returned as JSON and status 200', async () => {
@@ -93,6 +86,7 @@ describe('when there is initially one user in db', () => {
       const response = await api.get('/api/users')
       expect(response.body[0].id).toBeDefined()
       expect(response.body[0]._id).toBeUndefined()
+      expect(response.body[0].passwordHash).toBeUndefined()
     })
   })
 

@@ -13,3 +13,9 @@ export interface UserDB {
   passwordHash: string,
   blogs:mongoose.Types.ObjectId[],
 }
+
+export interface UserPayload {
+  username: string
+  name?: string
+  password?: string
+}

@@ -1,5 +1,6 @@
 import express from 'express'
 import { Blog } from '../models/blog'
+import { User } from '../models/user'
 import type { Request, Response } from 'express'
 
 
@@ -12,6 +13,10 @@ blogsRouter.get('/', async (request: Request, response:Response) => {
 })
 
 blogsRouter.post('/', async (request: Request, response:Response) => {
+  const user = await User.findById(request.body.userId)
+  if(!user){
+    return response.status(400).json({ error: 'userId missing or not valid' })
+  }
   const newBlog = request.body
   const blog = new Blog(newBlog)
   const savedBlog = await blog.save()
