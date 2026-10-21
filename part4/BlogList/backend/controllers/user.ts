@@ -19,7 +19,7 @@ usersRouter.post('/', async (request:Request<unknown, unknown, UserPayload>, res
 })
 
 usersRouter.get('/', async (_request:Request, response:Response) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('blogs', { title:1, url:1 })
   return response.status(200).json(users)
 })
 

@@ -8,7 +8,7 @@ import type { Request, Response } from 'express'
 const blogsRouter = express.Router()
 
 blogsRouter.get('/', async (request: Request, response:Response) => {
-  const blogList = await Blog.find({})
+  const blogList = await Blog.find({}).populate('user', { username:1, name:1 })
   return response.json(blogList)
 })
 
