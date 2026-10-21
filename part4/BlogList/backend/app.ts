@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import { MONGODB_URI } from './utils/config'
 import blogsRouter from './controllers/blog'
 import usersRouter from './controllers/user'
+import loginRouter from './controllers/login'
 import logger from './utils/logger'
 import middleware from './utils/middleware'
 
@@ -25,6 +26,7 @@ if(process.env.NODE_ENV !== 'test'){
 
 app.use(express.json())
 
+app.use('/api/login', loginRouter)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 
