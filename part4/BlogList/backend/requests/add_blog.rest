@@ -1,11 +1,20 @@
-post http://localhost:3003/api/blogs
-content-type:application/json
-
+# @name login
+POST http://localhost:3003/api/login
+Content-Type: application/json
 
 {
- 	"title": "test9",
-  "author": "test4",
-  "url": "test4",
-  "likes": 15,
-  "userId": "6ad5ded9e04863abead22e53"
+  "username": "test1",
+  "password": "test1"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "title": "Тестируем авто-токен в VS Code",
+  "author": "Matti Luukkainen",
+  "url": "https://fullstackopen.com",
+  "likes": 10
 }
