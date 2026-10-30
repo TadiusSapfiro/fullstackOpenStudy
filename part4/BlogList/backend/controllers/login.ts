@@ -10,7 +10,7 @@ const loginRouter = express.Router()
 loginRouter.post('/', async (request: Request, response:Response) => {
   const { username, password } = request.body
   const user = await User.findOne({ username })
-  const passwordIsCorrect = user === null ?
+  const passwordIsCorrect = (user === null  || !password) ?
     false : await bcrypt.compare(password, user.passwordHash)
 
   if(!user || !passwordIsCorrect){
