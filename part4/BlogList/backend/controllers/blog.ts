@@ -6,13 +6,7 @@ import jwt from 'jsonwebtoken'
 import { SECRET } from '../utils/config'
 import { UserTokenPayload } from '../types'
 
-const getTokenFrom = ( request: Request ) => {
-  const authorization = request.get('authorization')
-  if(authorization && authorization.startsWith('Bearer ')){
-    return authorization.replace('Bearer ', '')
-  }
-  return ''
-}
+
 
 const blogsRouter = express.Router()
 
@@ -22,8 +16,7 @@ blogsRouter.get('/', async (request: Request, response:Response) => {
 })
 
 blogsRouter.post('/', async (request: Request, response:Response) => {
-  const token = getTokenFrom(request)
-  const decodedToken = jwt.verify(token, SECRET) as UserTokenPayload
+  const decodedToken = jwt.verify(request.token || '', SECRET) as UserTokenPayload
   if(!decodedToken.id){
     return response.status(401).json({ error: 'invalid token' })
   }

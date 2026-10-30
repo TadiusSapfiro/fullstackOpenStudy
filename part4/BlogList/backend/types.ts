@@ -25,3 +25,9 @@ export interface UserTokenPayload {
   username: string
   id: string
 }
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    token?: string
+  }
+}

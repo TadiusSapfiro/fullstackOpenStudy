@@ -1,6 +1,17 @@
 import type { Request, Response, NextFunction } from 'express'
 import logger from './logger'
 
+const tokenExtractor = (request:Request, response:Response, next:NextFunction) => {
+
+  const authorization = request.get('authorization')
+  if(authorization && authorization.startsWith('Bearer ')){
+    request.token = authorization.replace('Bearer ', '')
+  }else{
+    request.token = ''
+  }
+  next()
+}
+
 const unknownEndpoint = (request:Request, response:Response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -28,4 +39,4 @@ const errorHandler = (error:any, request:Request, response:Response, next:NextFu
   next(error)
 }
 
-export default { unknownEndpoint, errorHandler }
+export default { unknownEndpoint, errorHandler, tokenExtractor }
