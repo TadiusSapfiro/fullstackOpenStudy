@@ -14,19 +14,19 @@ beforeAll(async() => {
 })
 
 
-beforeEach(async() => {
-  await clearDB()
-  const passwordHash = await bcrypt.hash('sekret', 10)
-  const user = new User({ username: 'root', passwordHash })
-
-  await user.save()
-})
-
 afterAll(async() => {
   await disconnectDB()
 })
 
 describe('when there is initially one user in db', () => {
+
+  beforeEach(async() => {
+    await clearDB()
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
 
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await usersInDb()
@@ -90,4 +90,84 @@ describe('when there is initially one user in db', () => {
     })
   })
 
+})
+
+
+describe('when there is initially 0 users in db', () => {
+  beforeEach(async() => {
+    await clearDB()
+  })
+  test('creation fails when username invalid', async () => {
+    const newUser: UserPayload = {
+      username: 'ro',
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await usersInDb()
+    expect(result.body.error).toContain('Username must be at least 3 characters long')
+
+    expect(usersAtEnd).toHaveLength(0)
+  })
+
+  test('creation fails when password invalid', async () => {
+    const newUser: UserPayload = {
+      username: 'root',
+      name: 'Superuser',
+      password: '1',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await usersInDb()
+    expect(result.body.error).toContain('Password is required and must be at least 3 characters long')
+
+    expect(usersAtEnd).toHaveLength(0)
+  })
+
+  test('creation fails when username is missing', async () => {
+    const newUser: Omit<UserPayload, 'username'> = {
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Username is required')
+
+    const usersAtEnd = await usersInDb()
+    expect(usersAtEnd).toHaveLength(0)
+  })
+
+  test('creation fails when password is missing', async () => {
+    const newUser: UserPayload = {
+      username: 'root',
+      name: 'Superuser',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Password is required and must be at least 3 characters long')
+
+    const usersAtEnd = await usersInDb()
+    expect(usersAtEnd).toHaveLength(0)
+  })
 })
