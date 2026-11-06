@@ -1,10 +1,7 @@
 import express from 'express'
 import { Blog } from '../models/blog'
-import { User } from '../models/user'
 import type { Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
-import { SECRET } from '../utils/config'
-import { UserTokenPayload } from '../types'
+import middleware from '../utils/middleware'
 
 
 
@@ -15,15 +12,9 @@ blogsRouter.get('/', async (request: Request, response:Response) => {
   return response.json(blogList)
 })
 
-blogsRouter.post('/', async (request: Request, response:Response) => {
-  const decodedToken = jwt.verify(request.token || '', SECRET) as UserTokenPayload
-  if(!decodedToken.id){
-    return response.status(401).json({ error: 'invalid token' })
-  }
-  const user = await User.findById(decodedToken.id)
-  if(!user){
-    return response.status(400).json({ error: 'userId missing or not valid' })
-  }
+blogsRouter.post('/', middleware.userExtractor, async (request: Request, response:Response) => {
+
+  const user = request.user!
 
   const { title, author, url, likes } = request.body
   const blog = new Blog({
@@ -41,21 +32,19 @@ blogsRouter.post('/', async (request: Request, response:Response) => {
   return response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (request: Request, response:Response) => {
-  const decodedToken = jwt.verify(request.token || '', SECRET) as UserTokenPayload
-  if(!decodedToken.id){
-    return response.status(401).json({ error: 'invalid token' })
-  }
+blogsRouter.delete('/:id', middleware.userExtractor, async (request: Request, response:Response) => {
   const blog = await Blog.findById(request.params.id)
-
+  const user = request.user!
   if(!blog) {
     return response.status(204).end()
   }
 
-  if ( blog.user.toString() !== decodedToken.id.toString() ){
+  if ( blog.user.toString() !== user._id.toString() ){
     return response.status(401).json({ error: 'only the user who created the blog can delete it' })
   }
   await blog.deleteOne()
+  user.blogs = user.blogs.filter(b => b.toString() !== blog._id.toString())
+  await user.save()
   return response.status(204).end()
 
 })

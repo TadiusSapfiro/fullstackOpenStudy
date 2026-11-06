@@ -1,5 +1,9 @@
 import type { Request, Response, NextFunction } from 'express'
 import logger from './logger'
+import jwt from 'jsonwebtoken'
+import { User } from '../models/user'
+import { SECRET } from './config'
+import { UserTokenPayload } from '../types'
 
 const tokenExtractor = (request:Request, response:Response, next:NextFunction) => {
 
@@ -11,6 +15,21 @@ const tokenExtractor = (request:Request, response:Response, next:NextFunction) =
   }
   next()
 }
+
+const userExtractor = async (request:Request, response:Response, next:NextFunction) => {
+  const decodedToken = jwt.verify(request.token || '', SECRET) as UserTokenPayload
+  if(!decodedToken.id){
+    return response.status(401).json({ error: 'invalid token' })
+  }
+  const user = await User.findById(decodedToken.id)
+  if(!user){
+    return response.status(400).json({ error: 'userId missing or not valid' })
+  }
+  request.user = user
+  next()
+}
+
+
 
 const unknownEndpoint = (request:Request, response:Response) => {
   response.status(404).send({ error: 'unknown endpoint' })
@@ -39,4 +58,4 @@ const errorHandler = (error:any, request:Request, response:Response, next:NextFu
   next(error)
 }
 
-export default { unknownEndpoint, errorHandler, tokenExtractor }
+export default { unknownEndpoint, errorHandler, tokenExtractor, userExtractor }

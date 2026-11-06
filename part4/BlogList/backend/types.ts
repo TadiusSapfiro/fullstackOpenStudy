@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { HydratedDocument } from 'mongoose'
 
 export interface BlogDB  {
   title: string,
@@ -28,6 +28,7 @@ export interface UserTokenPayload {
 
 declare module 'express-serve-static-core' {
   interface Request {
-    token?: string
+    token?: string,
+    user?:HydratedDocument<UserDB>
   }
 }

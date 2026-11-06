@@ -3,8 +3,8 @@ POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
-  "username": "test1",
-  "password": "test1"
+  "username": "test2",
+  "password": "test2"
 }
 
 ###
@@ -13,7 +13,7 @@ Content-Type: application/json
 Authorization: Bearer {{login.response.body.token}}
 
 {
-  "title": "Тестируем авто-токен в VS Code",
+  "title": "Тестируем авто-токен в VS Code 2",
   "author": "Matti Luukkainen",
   "url": "https://fullstackopen.com",
   "likes": 10
