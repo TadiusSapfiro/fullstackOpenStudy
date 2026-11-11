@@ -1,12 +1,17 @@
 import { describe, expect, test, beforeAll, afterAll, beforeEach } from 'vitest'
 import supertest from 'supertest'
-import app from '../app'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+import { User } from '../models/user'
 import { Blog } from '../models/blog'
+import app from '../app'
 import { clearDB, connectDB, disconnectDB } from '../utils/mongo_helper'
 import { initialBlogs } from './mock_data'
 import { BlogDB } from '../types'
+import { SECRET } from '../utils/config'
 
 const api = supertest(app)
+let token: string
 
 beforeAll(async() => {
   await connectDB()
@@ -15,7 +20,21 @@ beforeAll(async() => {
 
 beforeEach(async() => {
   await clearDB()
-  await Blog.insertMany(initialBlogs)
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', name: 'Superuser', passwordHash })
+  const savedUser = await user.save()
+
+  const userForToken = {
+    username: savedUser.username,
+    id: savedUser._id,
+  }
+  token = jwt.sign(userForToken, SECRET)
+
+  const blogsWithUser = initialBlogs.map(blog => ({
+    ...blog,
+    user: savedUser._id,
+  }))
+  await Blog.insertMany(blogsWithUser)
 })
 
 afterAll(async() => {
@@ -44,13 +63,14 @@ describe('fetching all blogs', () => {
 
 describe('addition of a new blog', () => {
   test('a valid blog can be added', async() => {
-    const newBlog:BlogDB = {
+    const newBlog = {
       title: 'Test blog 1',
       author: 'Test author',
       url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
       likes: 1,
     }
     await api.post('/api/blogs').
+      set('Authorization', `Bearer ${token}`).
       send(newBlog).
       expect(201).
       expect('Content-Type', /application\/json/)
@@ -61,12 +81,13 @@ describe('addition of a new blog', () => {
     expect(titlesList).toContain('Test blog 1')
   })
   test('if field "likes" not in the request, it value = 0',async() => {
-    const newBlog:BlogDB = {
+    const newBlog = {
       title: 'Test blog 2',
       author: 'Test author',
       url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
     }
     await api.post('/api/blogs').
+      set('Authorization', `Bearer ${token}`).
       send(newBlog).
       expect(201).
       expect('Content-Type', /application\/json/)
@@ -77,25 +98,44 @@ describe('addition of a new blog', () => {
 
   })
   test('if field "title" not in the request, status 400', async() => {
-    const newBlog: Omit<BlogDB, 'title'> = {
+    const newBlog = {
       author: 'Test author',
       url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
       likes: 1,
     }
     await api.post('/api/blogs').
+      set('Authorization', `Bearer ${token}`).
       send(newBlog).
       expect(400)
   })
 
   test('if field "url" not in the request, status 400', async() => {
-    const newBlog:Omit<BlogDB,'url'> = {
+    const newBlog = {
       title: 'Test blog 3',
       author: 'Test author',
       likes: 1,
     }
     await api.post('/api/blogs').
+      set('Authorization', `Bearer ${token}`).
       send(newBlog).
       expect(400)
+  })
+  test('adding a blog fails with status 401 if token is not provided', async () => {
+    const newBlog = {
+      title: 'Unauthorized Blog',
+      author: 'Ghost Writer',
+      url: 'https://example.com/unauthorized',
+      likes: 5,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await Blog.find({})
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length)
   })
 })
 
@@ -103,7 +143,11 @@ describe('deletion of a blog', () => {
   test('a valid blog can be deleted', async() => {
     const blogsAtStart = await Blog.find({})
     const blogToDelete = blogsAtStart[0]
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).
+      expect(204).
+      set('Authorization', `Bearer ${token}`)
+
     const blogsAtEnd = await Blog.find({})
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
     expect(blogsAtEnd.map(b => b.id)).not.toContain(blogToDelete.id)
@@ -118,7 +162,8 @@ describe('updating of a blog', () => {
     blogToUpdate.likes = 123321
     const putResponse = await api.
       put(`/api/blogs/${blogToUpdate.id}`).
-      send(blogToUpdate).
+      set('Authorization', `Bearer ${token}`).
+      send({ likes:123321 }).
       expect(200)
 
     expect(putResponse.body).toBeDefined()
